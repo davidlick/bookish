@@ -1,2 +1,3 @@
-# bookish
-Bookish bookstore sells books!
+# Bookish
+
+## Getting Started
