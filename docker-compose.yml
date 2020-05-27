@@ -14,7 +14,7 @@ services:
       - DBUSER=root
       - DBPASS=123pass
       - DBPORT=3306
-      - BOOKSHOST=<
+      - BOOKSHOST=<ADD BOOKS API HOSTNAME HERE>
   db:
       image: mysql
       ports:
