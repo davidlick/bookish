@@ -10,7 +10,7 @@ bookish is a customer relationship model for library systems. It keeps track of 
 
 ## Getting Started
 
-To run bookish locally first set the `BOOKSHOST` environment variable in `./docker-compose.yml` to the Books API hostname. You can then use the docker-compose from the root directory to spin up the local environment:
+To run bookish locally first set the `BOOKSHOST` environment variable in `./docker-compose.yml` to the Books API hostname. You can then use docker-compose from the root directory to spin up the local environment:
 
 ```
 docker-compose up -d
