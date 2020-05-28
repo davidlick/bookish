@@ -16,4 +16,10 @@ To run bookish locally first set the `BOOKSHOST` environment variable in `./dock
 docker-compose up -d
 ```
 
-This will start a local MySQL container on port `3306` using the `root` user and password `123pass`. A volume will be mounted that holds spin up SQL scripts that will prepare the database for you.ish-server` directory.
+This will start a local MySQL container on port `3306` using the `root` user and password `123pass`. A volume will be mounted that holds spin up SQL scripts that will prepare the database for you.
+
+Once the local backend environment is spun up you may start the `bookish-ui` development environment by running:
+
+```
+cd bookish-ui && npm start
+```
