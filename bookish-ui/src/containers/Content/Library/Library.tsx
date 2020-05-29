@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch, RootStateOrAny } from 'react-redux';
+import { fetchBooks } from '../../../actions/books';
 
 import Book from './Book/Book';
+import { BookType } from '../../../types/book';
 
 const LibraryContainer = styled.div`
     display: flex;
@@ -9,34 +12,29 @@ const LibraryContainer = styled.div`
     justify-content: center;
 `
 
-const books = [
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"}
-]
+const Library: React.FC = () => {
+    const books = useSelector((state: RootStateOrAny) => state.books);
+    const filter = useSelector((state: RootStateOrAny) => state.books.filter);
+    const dispatch = useDispatch();
 
-const Library: React.FC = () => (
-    <LibraryContainer>
-        {books.map(book => (
+    useEffect(() => {
+        dispatch(fetchBooks())
+    }, []);
+
+    const displayBooks = books.books.filter((book: BookType) => book.title.toLowerCase().indexOf(filter) !== -1);
+
+    return (
+        <LibraryContainer>
+            {displayBooks && displayBooks.map((book: BookType) => (
                 <Book
-                    title={book.title}
-                    author={book.author}
-                    imageLink={book.imageLink}
+                    key={book.title}
+                    title={book.title || ''}
+                    author={book.author || ''}
+                    isbn={book.isbn || ''}
                     />
-         ))}
-    </LibraryContainer>
-)
+            ))}
+        </LibraryContainer>
+    )
+}
 
 export default Library;

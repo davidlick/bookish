@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch, RootStateOrAny } from 'react-redux';
 import styled from 'styled-components';
+
+import { fetchBookCover } from '../../../../actions/books';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
+import { actionTypes } from '../../../../constants/books/action_types';
 
 const BookContainer = styled.div`
     display: flex;
@@ -12,8 +16,8 @@ const BookContainer = styled.div`
     background-color: #fff;
     border: 0.1px solid #8C8C8C;
     box-shadow: 10px 5px 15px rgba(0,0,0,50);
-    width: 200px;
-    height: 350px;
+    width: 175px;
+    height: 275px;
 `
 
 const IconContainer = styled.div`
@@ -26,12 +30,13 @@ const StyledIcon = styled(FontAwesomeIcon)`
     position: absolute;
     top: 0;
     right: 0;
-    transform: translate(220px, -15px);
+    transform: translate(195px, -15px);
     font-size: 38px;
+    cursor: pointer;
 `
 
 const CoverImage = styled.img`
-    max-width: 90%;
+    max-height: 75%;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -54,20 +59,46 @@ const Author = styled.div`
 type Props = {
     title: string;
     author: string;
-    imageLink: string;
+    isbn: string;
 }
 
-const Book: React.FC<Props> = ({ title, author, imageLink }) => (
-    <BookContainer>
-        <IconContainer>
-            <StyledIcon icon={faCartPlus} />
-        </IconContainer>
-        <CoverImage
-            src={imageLink}
-            />
-        <Title>{title}</Title>
-        <Author>{author}</Author>
-    </BookContainer>
-)
+const Book: React.FC<Props> = ({ title, author, isbn }) => {
+    const imageLink = useSelector((state: RootStateOrAny) => state.books.images[title])
+    const cart = useSelector((state: RootStateOrAny) => state.books.cart)
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (imageLink === undefined) {
+            dispatch(fetchBookCover(title, isbn))
+        }
+    }, []);
+
+    const handleAddToCart = () => {
+        if (cart.length > 1) {
+            // TODO: Add a toast notification here when cart is full.
+            alert("You can only check out 2 books at a time!");
+            return;
+        }
+
+        // TODO: Add a toast notification here when item added to cart.
+        dispatch({ type: actionTypes.ADD_TO_CART, data: title });
+    }
+
+    return (
+        <BookContainer>
+            <IconContainer>
+                <StyledIcon
+                    icon={faCartPlus}
+                    onClick={handleAddToCart}
+                    />
+            </IconContainer>
+            <CoverImage
+                src={imageLink || 'https://college.indiana.edu/images/publications/book-cover-placeholder.jpg'}
+                />
+            <Title>{title}</Title>
+            <Author>{author}</Author>
+        </BookContainer>
+    )
+}
 
 export default Book;

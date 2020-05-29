@@ -88,6 +88,7 @@ func (s *Server) UpdateMap() error {
 func (s *Server) BuildRoutes() http.Handler {
 	r := chi.NewRouter()
 
+	r.Use(cors)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)

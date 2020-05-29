@@ -56,7 +56,7 @@ const RenterReturnContainer = styled.div`
 
 type Props = {
     name: string;
-    phone: string;
+    phoneNumber: string;
     email: string;
 }
 
@@ -65,7 +65,7 @@ const books = [
     {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"}
 ]
 
-const RenterCard: React.FC<Props> = ({ name, phone, email }) => (
+const RenterCard: React.FC<Props> = ({ name, phoneNumber, email }) => (
     <RenterCardContainer>
         <RenterImageContainer>
             <RenterImagePlaceholder
@@ -76,7 +76,7 @@ const RenterCard: React.FC<Props> = ({ name, phone, email }) => (
                 {name}
             </RenterName>
             <RenterPhone>
-                {phone}
+                {phoneNumber}
             </RenterPhone>
             <RenterEmail>
                 {email}

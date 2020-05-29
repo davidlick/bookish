@@ -7,7 +7,7 @@ const ButtonBayContainer = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-left: 7.5px;
+    margin-left: 35px;
     width: 320px;
     height: 100%;
 `

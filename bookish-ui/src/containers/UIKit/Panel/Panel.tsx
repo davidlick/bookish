@@ -13,7 +13,7 @@ const PanelContainer = styled.div`
 
 type Props = {
     children: React.ReactNode;
-    style: CSS.Properties;
+    style?: CSS.Properties;
 }
 
 const Panel: React.FC<Props> = ({ children, style }) => (
