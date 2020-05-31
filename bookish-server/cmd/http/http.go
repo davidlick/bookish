@@ -9,7 +9,7 @@ import (
 	"time"
 
 	bookish "github.com/davidlick/bookish/bookish-server"
-	"github.com/davidlick/bookish/bookish-server/inventory"
+	"github.com/davidlick/bookish/bookish-server/rental"
 	"github.com/davidlick/bookish/bookish-server/renter"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -21,8 +21,8 @@ type Server struct {
 	Port      string
 	BooksHost string
 	Logger    *logrus.Logger
-	Renter    renter.Service
-	Inventory inventory.Service
+	Renters   renter.Service
+	Rentals   rental.Service
 	// LibraryMap holds a map of values that are returned by the books API. This is used to check
 	// if a book exists in the library.
 	LibraryMap struct {

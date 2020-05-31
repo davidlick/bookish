@@ -10,9 +10,10 @@ import (
 	"time"
 
 	"github.com/davidlick/bookish/bookish-server/cmd/http"
-	"github.com/davidlick/bookish/bookish-server/inventory"
 	"github.com/davidlick/bookish/bookish-server/mysql"
+	"github.com/davidlick/bookish/bookish-server/rental"
 	"github.com/davidlick/bookish/bookish-server/renter"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/sirupsen/logrus"
 )
 
@@ -43,7 +44,7 @@ func init() {
 
 func main() {
 	// Connect to application database and create store.
-	appDSN := fmt.Sprintf("%s:%s@tcp(%s:%s)/bookish?parseTime=True&loc=Local",
+	appDSN := fmt.Sprintf("mysql://%s:%s@tcp(%s:%s)/bookish?parseTime=true&loc=local&multiStatements=true",
 		cfg.DBUser,
 		cfg.DBPass,
 		cfg.DBHost,
@@ -56,15 +57,15 @@ func main() {
 
 	// Build domain services.
 	renterService := renter.NewService(appDB)
-	inventoryService := inventory.NewService(appDB)
+	rentalService := rental.NewService(appDB)
 
 	// Initialize server.
 	server := http.Server{
 		Port:      cfg.APIPort,
 		BooksHost: cfg.BooksHost,
 		Logger:    logger,
-		Renter:    renterService,
-		Inventory: inventoryService,
+		Renters:   renterService,
+		Rentals:   rentalService,
 	}
 
 	// Create channels to listen for OS signals.

@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	bookish "github.com/davidlick/bookish/bookish-server"
+	"github.com/davidlick/bookish/bookish-server/models"
+	"github.com/gofrs/uuid"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,12 +14,12 @@ import (
 func TestRenter_ListRenters(t *testing.T) {
 	testCases := []struct {
 		TestName string
-		Renters  []bookish.Renter
+		Renters  []models.Renter
 		Error    error
 	}{
 		{
 			TestName: "success",
-			Renters: []bookish.Renter{
+			Renters: []models.Renter{
 				{
 					Name:        "John Doe",
 					Address:     "123 Main Way",
@@ -49,7 +51,13 @@ func TestRenter_ListRenters(t *testing.T) {
 			service := NewService(mockStorage)
 			renters, err := service.ListRenters()
 
-			assert.Equal(t, tc.Renters, renters)
+			var expectedRenters []bookish.Renter
+			for _, renter := range tc.Renters {
+				r := MutateRenterModel(renter)
+				expectedRenters = append(expectedRenters, r)
+			}
+
+			assert.Equal(t, expectedRenters, renters)
 			assert.Equal(t, tc.Error, err)
 		})
 	}
@@ -59,13 +67,12 @@ func TestRenter_FetchRenter(t *testing.T) {
 	testCases := []struct {
 		TestName string
 		ID       int
-		Renter   bookish.Renter
+		Renter   models.Renter
 		Error    error
 	}{
 		{
 			TestName: "success",
-			ID:       1,
-			Renter: bookish.Renter{
+			Renter: models.Renter{
 				Name:        "John Smith",
 				Address:     "123 Main Way",
 				Email:       "john@smith.com",
@@ -74,7 +81,6 @@ func TestRenter_FetchRenter(t *testing.T) {
 		},
 		{
 			TestName: "error",
-			ID:       1,
 			Error:    errors.New("test error"),
 		},
 	}
@@ -84,13 +90,23 @@ func TestRenter_FetchRenter(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			renterId, err := uuid.NewV4()
+			if err != nil {
+				t.Error(err)
+			}
+
 			mockStorage := NewMockStorage(ctrl)
-			mockStorage.EXPECT().FetchDetails(tc.ID).Return(tc.Renter, tc.Error)
+			mockStorage.EXPECT().FetchDetails(renterId.String()).Return(tc.Renter, tc.Error)
 
 			service := NewService(mockStorage)
-			renter, err := service.FetchRenter(tc.ID)
+			renter, err := service.FetchRenter(renterId.String())
 
-			assert.Equal(t, tc.Renter, renter)
+			expectedRenter := MutateRenterModel(tc.Renter)
+			if tc.Error != nil {
+				renter.ID = "00000000-0000-0000-0000-000000000000"
+			}
+
+			assert.Equal(t, expectedRenter, renter)
 			assert.Equal(t, tc.Error, err)
 		})
 	}
@@ -103,7 +119,6 @@ func TestRenter_RegisterRenter(t *testing.T) {
 		Address     string
 		Email       string
 		PhoneNumber string
-		ReturnID    int
 		Error       error
 	}{
 		{
@@ -116,13 +131,18 @@ func TestRenter_RegisterRenter(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			returnUuid, err := uuid.NewV4()
+			if err != nil {
+				t.Error(err)
+			}
+
 			mockStorage := NewMockStorage(ctrl)
-			mockStorage.EXPECT().New(tc.Name, tc.Address, tc.Email, tc.PhoneNumber).Return(tc.ReturnID, tc.Error)
+			mockStorage.EXPECT().New(tc.Name, tc.Address, tc.Email, tc.PhoneNumber).Return(returnUuid, tc.Error)
 
 			service := NewService(mockStorage)
 			id, err := service.RegisterRenter(tc.Name, tc.Address, tc.Email, tc.PhoneNumber)
 
-			assert.Equal(t, tc.ReturnID, id)
+			assert.Equal(t, returnUuid, id)
 			assert.Equal(t, tc.Error, err)
 		})
 	}

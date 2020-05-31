@@ -5,6 +5,6 @@ import (
 )
 
 var (
-	ErrNotFound      = errors.New("no renter found")
+	ErrNotFound      = errors.New("empty result")
 	ErrAlreadyExists = errors.New("the provided value already exists")
 )

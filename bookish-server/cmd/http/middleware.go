@@ -6,7 +6,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/davidlick/bookish/bookish-server/internal"
 	"github.com/davidlick/bookish/bookish-server/mysql"
@@ -36,13 +35,7 @@ func (s *Server) renterCtx(next http.Handler) http.Handler {
 		ctx := r.Context()
 		id := chi.URLParam(r, "renterId")
 
-		renterId, err := strconv.Atoi(id)
-		if err != nil {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			return
-		}
-
-		renter, err := s.Renter.FetchRenter(renterId)
+		renter, err := s.Renters.FetchRenter(id)
 		if err != nil && errors.Is(mysql.ErrNotFound, err) {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return

@@ -14,14 +14,14 @@ services:
       - DBUSER=root
       - DBPASS=123pass
       - DBPORT=3306
-      - BOOKSHOST=<ADD BOOKS API HOSTNAME HERE>
+      - BOOKSHOST=https://servicepros-test-api.herokuapp.com
   db:
-      image: mysql
-      ports:
-        - 3306:3306
-      restart: always
-      volumes:
-        - ./init:/docker-entrypoint-initdb.d
-      environment:
-        MYSQL_DATABASE: bookish
-        MYSQL_ROOT_PASSWORD: 123pass
+    image: mysql
+    ports:
+      - 3306:3306
+    restart: always
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: bookish
+      MYSQL_ROOT_PASSWORD: 123pass

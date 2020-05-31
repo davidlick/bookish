@@ -1,18 +1,18 @@
-package inventory
+package rental
 
 import (
 	"errors"
 	"testing"
 
+	"github.com/gofrs/uuid"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInventory_IsBookAvailable(t *testing.T) {
+func TestRental_IsBookAvailable(t *testing.T) {
 	testCases := []struct {
 		TestName  string
 		Title     string
-		RenterId  int
 		Available bool
 		Error     error
 	}{
@@ -50,10 +50,9 @@ func TestInventory_IsBookAvailable(t *testing.T) {
 	}
 }
 
-func TestInventory_CheckoutBook(t *testing.T) {
+func TestRental_CheckoutBook(t *testing.T) {
 	testCases := []struct {
 		TestName        string
-		RenterId        int
 		Title           string
 		Available       bool
 		AvailableError  error
@@ -63,27 +62,23 @@ func TestInventory_CheckoutBook(t *testing.T) {
 	}{
 		{
 			TestName:  "success",
-			RenterId:  1,
 			Title:     "Book #1",
 			Available: true,
 		},
 		{
 			TestName:  "unavailable",
-			RenterId:  2,
 			Title:     "Book #2",
 			Available: false,
 			Error:     ErrUnavailableBook,
 		},
 		{
 			TestName:       "availability_error",
-			RenterId:       3,
 			Title:          "Book #3",
 			AvailableError: errors.New("test error"),
 			Error:          errors.New("test error"),
 		},
 		{
 			TestName:   "checked-out",
-			RenterId:   4,
 			Title:      "Book #4",
 			Available:  true,
 			CheckedOut: true,
@@ -91,7 +86,6 @@ func TestInventory_CheckoutBook(t *testing.T) {
 		},
 		{
 			TestName:  "failure",
-			RenterId:  4,
 			Title:     "Book #4",
 			Available: true,
 			Error:     errors.New("test error"),
@@ -103,38 +97,40 @@ func TestInventory_CheckoutBook(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			renterId, err := uuid.NewV4()
+			if err != nil {
+				t.Error(err)
+			}
+
 			mockStorage := NewMockStorage(ctrl)
 			mockStorage.EXPECT().IsBookAvailable(tc.Title).Return(tc.Available, tc.AvailableError)
 			if tc.Available && tc.AvailableError == nil {
-				mockStorage.EXPECT().RenterAlreadyCheckedOut(tc.RenterId, tc.Title).Return(tc.CheckedOut, tc.CheckedOutError)
+				mockStorage.EXPECT().RenterAlreadyCheckedOut(renterId, tc.Title).Return(tc.CheckedOut, tc.CheckedOutError)
 				if !tc.CheckedOut && tc.CheckedOutError == nil {
-					mockStorage.EXPECT().CheckoutBook(tc.RenterId, tc.Title).Return(tc.Error)
+					mockStorage.EXPECT().CheckoutBook(renterId, tc.Title).Return(tc.Error)
 				}
 			}
 
 			service := NewService(mockStorage)
-			err := service.CheckoutBook(tc.RenterId, tc.Title)
+			err = service.CheckoutBook(renterId, tc.Title)
 
 			assert.Equal(t, tc.Error, err)
 		})
 	}
 }
 
-func TestInventory_ReturnBook(t *testing.T) {
+func TestRental_ReturnBook(t *testing.T) {
 	testCases := []struct {
 		TestName string
-		RenterId int
 		Title    string
 		Error    error
 	}{
 		{
 			TestName: "success",
-			RenterId: 1,
 			Title:    "Book #1",
 		},
 		{
 			TestName: "failure",
-			RenterId: 2,
 			Title:    "Book #2",
 			Error:    errors.New("test error"),
 		},
@@ -145,11 +141,16 @@ func TestInventory_ReturnBook(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			renterId, err := uuid.NewV4()
+			if err != nil {
+				t.Error(err)
+			}
+
 			mockStorage := NewMockStorage(ctrl)
-			mockStorage.EXPECT().ReturnBook(tc.RenterId, tc.Title).Return(tc.Error)
+			mockStorage.EXPECT().ReturnBook(renterId, tc.Title).Return(tc.Error)
 
 			service := NewService(mockStorage)
-			err := service.ReturnBook(tc.RenterId, tc.Title)
+			err = service.ReturnBook(renterId, tc.Title)
 
 			assert.Equal(t, tc.Error, err)
 		})

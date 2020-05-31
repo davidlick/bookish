@@ -4,63 +4,43 @@ import (
 	"database/sql"
 	"errors"
 
-	bookish "github.com/davidlick/bookish/bookish-server"
-	"github.com/go-sql-driver/mysql"
+	"github.com/davidlick/bookish/bookish-server/models"
+	"github.com/gofrs/uuid"
 )
 
 // ListAll returns all renter records.
-func (s *store) ListAll() (rr []bookish.Renter, err error) {
-	q := `
-		SELECT
-			*
-		FROM
-			renters
-	`
-
-	err = s.Select(&rr, q)
+func (s *store) ListAll() (rr []models.Renter, err error) {
+	err = s.Eager().All(&rr)
 	if err != nil && errors.Is(sql.ErrNoRows, err) {
 		return nil, ErrNotFound
 	}
+
 	return
 }
 
 // FetchDetails queries the database for a specific renter.
-func (s *store) FetchDetails(id int) (r bookish.Renter, err error) {
-	q := `
-		SELECT
-			*
-		FROM
-			renters
-		WHERE
-			id = ?
-	`
-
-	err = s.Get(&r, q, id)
-	if err != nil && errors.Is(sql.ErrNoRows, err) {
-		return bookish.Renter{}, ErrNotFound
-	}
+func (s *store) FetchDetails(id string) (r models.Renter, err error) {
+	err = s.Eager().Find(&r, id)
 	return
 }
 
 // New inserts a record for a new renter. If that renter already exists it returns an ErrAlreadyExists.
-func (s *store) New(name string, address string, email string, phoneNumber string) (id int, err error) {
-	q := `
-		INSERT INTO
-			renters (name, address, email, phone_number)
-		VALUES
-			(?, ?, ?, ?)
-	`
-
-	result, err := s.Exec(q, name, address, email, phoneNumber)
-	if err != nil {
-		if _, ok := err.(*mysql.MySQLError); ok {
-			return 0, ErrAlreadyExists
-		}
+func (s *store) New(name string, address string, email string, phoneNumber string) (id uuid.UUID, err error) {
+	r := models.Renter{
+		Name:        name,
+		Address:     address,
+		Email:       email,
+		PhoneNumber: phoneNumber,
 	}
 
-	lastId, err := result.LastInsertId()
+	// Create the new renter.
+	err = s.Create(&r)
 	if err != nil {
-		return id, err
+		return
 	}
-	return int(lastId), nil
+
+	// Get the last renter created.
+	r = models.Renter{}
+	err = s.Last(&r)
+	return r.ID, err
 }

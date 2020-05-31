@@ -7,6 +7,7 @@ import (
 
 	bookish "github.com/davidlick/bookish/bookish-server"
 	"github.com/davidlick/bookish/bookish-server/internal"
+	"github.com/gofrs/uuid"
 )
 
 // registerRenter creates a record of a new renter.
@@ -24,14 +25,14 @@ func (s *Server) registerRenter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := s.Renter.RegisterRenter(renter.Name, renter.Address, renter.Email, renter.PhoneNumber)
+	id, err := s.Renters.RegisterRenter(renter.Name, renter.Address, renter.Email, renter.PhoneNumber)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	resp := struct {
-		ID int `json:"renterId"`
+		ID uuid.UUID `json:"renterId"`
 	}{ID: id}
 
 	json.NewEncoder(w).Encode(resp)
@@ -39,7 +40,7 @@ func (s *Server) registerRenter(w http.ResponseWriter, r *http.Request) {
 
 // listRenters lists all renters registered in the API.
 func (s *Server) listRenters(w http.ResponseWriter, r *http.Request) {
-	rr, err := s.Renter.ListRenters()
+	rr, err := s.Renters.ListRenters()
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
