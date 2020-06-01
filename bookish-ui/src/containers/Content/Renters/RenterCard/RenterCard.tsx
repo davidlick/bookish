@@ -1,7 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { useSelector, RootStateOrAny } from 'react-redux';
+
 import BookReturn from './BookReturn/BookReturn';
+import CheckoutButton from './CheckoutButton/CheckoutButton';
 
 const RenterCardContainer = styled.div`
     background-color: #fff;
@@ -55,41 +58,62 @@ const RenterReturnContainer = styled.div`
 `
 
 type Props = {
+    id: string;
     name: string;
     phoneNumber: string;
     email: string;
+    rentals: [string];
+    displayRentals: boolean;
+    displayCheckout: boolean;
+    handleCheckoutClicked: Function;
 }
 
-const books = [
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"},
-    {title: "To Kill a Mockingbird", author: "Harper Lee", imageLink: "http://www.prepressure.com/images/book-cover-to-kill-a-mocking-bird.jpg"}
-]
+const RenterCard: React.FC<Props> = ({
+    id,
+    name,
+    phoneNumber,
+    email,
+    rentals,
+    displayRentals,
+    displayCheckout,
+    handleCheckoutClicked
+}) => {
+    const books = useSelector((state: RootStateOrAny) => state.books.books);
 
-const RenterCard: React.FC<Props> = ({ name, phoneNumber, email }) => (
-    <RenterCardContainer>
-        <RenterImageContainer>
-            <RenterImagePlaceholder
-                src="https://avatars3.githubusercontent.com/u/47925772?s=400&v=4" />
-        </RenterImageContainer>
-        <RenterInfoContainer>
-            <RenterName>
-                {name}
-            </RenterName>
-            <RenterPhone>
-                {phoneNumber}
-            </RenterPhone>
-            <RenterEmail>
-                {email}
-            </RenterEmail>
-        </RenterInfoContainer>
-        <RenterReturnContainer>
-            {books.map(book => (
-                <BookReturn
-                    imageLink={book.imageLink}
-                />
-            ))}
-        </RenterReturnContainer>
-    </RenterCardContainer>
-)
+    return (
+        <RenterCardContainer>
+            <RenterImageContainer>
+                <RenterImagePlaceholder
+                    src="https://avatars3.githubusercontent.com/u/47925772?s=400&v=4" />
+            </RenterImageContainer>
+            <RenterInfoContainer>
+                <RenterName>
+                    {name}
+                </RenterName>
+                <RenterPhone>
+                    {phoneNumber}
+                </RenterPhone>
+                <RenterEmail>
+                    {email}
+                </RenterEmail>
+            </RenterInfoContainer>
+            <RenterReturnContainer>
+                {books && displayRentals && rentals && rentals.map(rental => {
+                    return (
+                        <BookReturn
+                            key={id}
+                            renterId={id}
+                            book={books.find(book => book.title === rental)}
+                            />
+                    );
+                })}
+                {displayCheckout && 
+                    <CheckoutButton
+                        clickHandler={() => handleCheckoutClicked(id)}
+                        />}
+            </RenterReturnContainer>
+        </RenterCardContainer>
+    );
+};
 
 export default RenterCard;

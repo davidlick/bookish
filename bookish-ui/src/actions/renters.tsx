@@ -9,7 +9,6 @@ export function fetchRenters() {
 
         bookishApi.get('/renters')
             .then(res => {
-                console.log(res)
                 dispatch({
                     type: actionTypes.FETCH_RENTERS.success,
                     data: res.data
@@ -31,10 +30,17 @@ export function registerRenter(name: string, address: string, email: string, pho
                 type: actionTypes.REGISTER_RENTER.success,
                 data: res.data
             }))
-            .catch(err => dispatch({
-                type: actionTypes.REGISTER_RENTER.failure,
-                err: err.message
-            }))
+            // After a renter is registered successfully, refetch renters.
+            .then(() => {
+                dispatch<any>(fetchRenters());
+            })
+            .catch(err => {
+                alert('Could not register renter');
+                dispatch({
+                    type: actionTypes.REGISTER_RENTER.failure,
+                    err: err.message
+                })
+            })
 
     }
 }

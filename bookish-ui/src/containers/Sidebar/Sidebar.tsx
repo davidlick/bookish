@@ -6,7 +6,7 @@ import Menu from './Menu/Menu'
 
 const SidebarContainer = styled.div`
     background: #011126;
-    box-shadow: 0px 0px 5px rgba(0,0,0,50);
+    box-shadow: 0px 0px 12px rgba(0,0,0,100);
     padding-top: 2.5%;
     min-width: 275px;
     flex: 1;

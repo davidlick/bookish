@@ -73,9 +73,18 @@ export function books(state = initialState, action: Action) {
 
         // ADD_TO_CART action
         case actionTypes.ADD_TO_CART:
+            alert(`Added ${action.data} to the cart`);
             return {
                 ...state,
                 cart: state.cart.concat(action.data)
+            }
+
+        // REMOVE_FROM_CART action
+        case actionTypes.REMOVE_FROM_CART:
+            alert(`Removed ${action.data} from the cart`);
+            return {
+                ...state,
+                cart: state.cart.filter(item => item !== action.data)
             }
 
         // CHECKOUT_BOOK action
@@ -114,6 +123,13 @@ export function books(state = initialState, action: Action) {
                 ...state,
                 loading: false,
                 returnError: action.err
+            }
+
+        // CLEAR_CART action
+        case actionTypes.CLEAR_CART:
+            return {
+                ...state,
+                cart: [],
             }
             
         default:

@@ -18,7 +18,7 @@ const Library: React.FC = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(fetchBooks())
+        dispatch(fetchBooks());
     }, []);
 
     const displayBooks = books.books.filter((book: BookType) => book.title.toLowerCase().indexOf(filter) !== -1);

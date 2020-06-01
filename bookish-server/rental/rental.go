@@ -1,8 +1,6 @@
 package rental
 
 import (
-	"fmt"
-
 	"github.com/gofrs/uuid"
 )
 
@@ -52,7 +50,6 @@ func (s *service) CheckoutBook(renterId uuid.UUID, title string) error {
 	// If there was an error or the book is checked out by the renter already we'll
 	// say the book is unavailable.
 	if err != nil || checkedOut {
-		fmt.Println("unavailable book", err, checkedOut)
 		return ErrUnavailableBook
 	}
 

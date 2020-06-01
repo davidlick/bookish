@@ -7,9 +7,19 @@ import RenterCard from './RenterCard/RenterCard';
 
 import { RenterType } from '../../../types/renter';
 
-const Renters: React.FC = () => {
-    const renters = useSelector((state: RootStateOrAny) => state.renters);
+import { useLocation } from 'react-router-dom';
+
+type Props = {
+    checkout: Function;
+}
+
+const Renters: React.FC<Props> = ({ checkout }) => {
+    const renters = useSelector((state: RootStateOrAny) => state.renters.renters);
     const dispatch = useDispatch();
+    const location = useLocation();
+
+    const displayRentals = location.pathname === '/return';
+    const displayCheckout = location.pathname === '/checkout';
 
     useEffect(() => {
         dispatch(fetchRenters())
@@ -22,11 +32,17 @@ const Renters: React.FC = () => {
             flexWrap: 'wrap',
             justifyContent: 'center'
         }}>
-            {renters && renters.renters.map((renter: RenterType) => (
+            {renters && renters.map((renter: RenterType) => (
                 <RenterCard
-                    name={renter.name || ''}
-                    phoneNumber={renter.phoneNumber || ''}
-                    email={renter.email || ''}
+                    key={renter.id}
+                    id={renter.id}
+                    name={renter.name}
+                    phoneNumber={renter.phoneNumber}
+                    email={renter.email}
+                    rentals={renter.rentals}
+                    displayRentals={displayRentals}
+                    displayCheckout={displayCheckout}
+                    handleCheckoutClicked={checkout}
                     />    
             ))}
         </Panel>

@@ -16,7 +16,7 @@ const ButtonBay: React.FC = () => (
     <ButtonBayContainer>
         <Button
             text="Register new renter"
-            destination="/renters"
+            destination="/register"
             />
        <Button
             text="Checkout"

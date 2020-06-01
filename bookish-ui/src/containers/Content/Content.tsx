@@ -6,6 +6,7 @@ import Header from './Header/Header';
 import Library from './Library/Library';
 import Cart from './Cart/Cart';
 import Renters from './Renters/Renters';
+import Register from './Register/Register';
 
 const ContentContainer = styled.div`
     width: 100%;
@@ -18,9 +19,9 @@ const Content: React.FC = () => (
         <Route path="/" exact component={Library} />
         <Route path="/library" component={Library} />
         <Route path="/renters" component={Renters} />
+        <Route path="/register" component={Register} />
         <Route path="/return" component={Renters} />
         <Route path="/checkout" component={Cart} />
-        <Route path="/checkout" component={Renters} />
     </ContentContainer>
 )
 

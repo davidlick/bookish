@@ -63,8 +63,8 @@ type Props = {
 }
 
 const Book: React.FC<Props> = ({ title, author, isbn }) => {
-    const imageLink = useSelector((state: RootStateOrAny) => state.books.images[title])
-    const cart = useSelector((state: RootStateOrAny) => state.books.cart)
+    const imageLink = useSelector((state: RootStateOrAny) => state.books.images[title]);
+    const cart = useSelector((state: RootStateOrAny) => state.books.cart);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -75,12 +75,10 @@ const Book: React.FC<Props> = ({ title, author, isbn }) => {
 
     const handleAddToCart = () => {
         if (cart.length > 1) {
-            // TODO: Add a toast notification here when cart is full.
             alert("You can only check out 2 books at a time!");
             return;
         }
 
-        // TODO: Add a toast notification here when item added to cart.
         dispatch({ type: actionTypes.ADD_TO_CART, data: title });
     }
 

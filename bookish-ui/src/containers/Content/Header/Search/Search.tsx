@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { useLocation } from 'react-router-dom';
+
 import { useDispatch } from 'react-redux';
 import { actionTypes } from '../../../../constants/books/action_types';
 
@@ -37,16 +39,21 @@ const StyledIcon = styled(FontAwesomeIcon)`
 
 const Search: React.FC = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
+
+    const displaySearch = location.pathname === '/library' || location.pathname === '/';
 
     return (
-        <SearchContainer>
-            <StyledInput
-                onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                    dispatch({ type: actionTypes.SET_FILTER, data: e.currentTarget.value });
-                }}
-                />
-            <StyledIcon icon={faSearch} />
-        </SearchContainer>
+        <>
+            {displaySearch && <SearchContainer>
+                <StyledInput
+                    onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                        dispatch({ type: actionTypes.SET_FILTER, data: e.currentTarget.value });
+                    }}
+                    />
+                <StyledIcon icon={faSearch} />
+            </SearchContainer>}
+        </>
     )
 }
 
