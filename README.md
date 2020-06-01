@@ -2,7 +2,7 @@
 
 ![bookish Library](https://github.com/davidlick/bookish/blob/master/bookish-library.png?raw=true)
 
-bookish is a customer relationship model for library systems. It keeps track of renters and the books they have out.
+bookish is customer relationship management for library systems. It keeps track of renters and the books they have out.
 
 ## Prerequisites
 
